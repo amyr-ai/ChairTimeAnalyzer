@@ -1,0 +1,9 @@
+opencv-python
+ultralytics
+numpy
+pandas
+openpyxl
+PySide6
+Pillow
+reportlab
+tqdm
