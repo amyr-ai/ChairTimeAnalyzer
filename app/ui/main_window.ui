@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1202</width>
     <height>800</height>
    </rect>
   </property>
@@ -20,13 +20,129 @@
    <string>Chair Time Analyzer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="grpVideoQueue">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>311</width>
+      <height>391</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Video Queue</string>
+    </property>
+    <widget class="QTreeWidget" name="treeVideos">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>291</width>
+       <height>361</height>
+      </rect>
+     </property>
+     <column>
+      <property name="text">
+       <string>Video</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Status</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Duration</string>
+      </property>
+     </column>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="grpPreview">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>130</y>
+      <width>861</width>
+      <height>391</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Video Preview</string>
+    </property>
+    <widget class="QLabel" name="lblPreview">
+     <property name="geometry">
+      <rect>
+       <x>370</x>
+       <y>180</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>No Video Selected</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="grpSummary">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>520</y>
+      <width>311</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Today's Summary</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="grpLog">
+    <property name="geometry">
+     <rect>
+      <x>329</x>
+      <y>520</y>
+      <width>861</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Processing Log</string>
+    </property>
+    <widget class="QPlainTextEdit" name="txtLog">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>841</width>
+       <height>141</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QProgressBar" name="progressAnalysis">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>700</y>
+      <width>1191</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+   </widget>
    <widget class="QGroupBox" name="grpProject">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>250</y>
-      <width>611</width>
-      <height>261</height>
+      <x>10</x>
+      <y>10</y>
+      <width>1181</width>
+      <height>121</height>
      </rect>
     </property>
     <property name="title">
@@ -36,7 +152,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>-10</y>
+       <y>-30</y>
        <width>219</width>
        <height>110</height>
       </rect>
@@ -48,8 +164,8 @@
     <widget class="QCheckBox" name="chkAutoDelete">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>170</y>
+       <x>20</x>
+       <y>80</y>
        <width>349</width>
        <height>24</height>
       </rect>
@@ -61,8 +177,8 @@
     <widget class="QWidget" name="">
      <property name="geometry">
       <rect>
-       <x>22</x>
-       <y>100</y>
+       <x>20</x>
+       <y>40</y>
        <width>561</width>
        <height>28</height>
       </rect>
@@ -87,12 +203,177 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1202</width>
      <height>33</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpenFolder"/>
+    <addaction name="actionOpenDatabase"/>
+    <addaction name="actionOpenExcel"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuReports">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionAnalyze"/>
+    <addaction name="actionStop"/>
+    <addaction name="actionCleareQueue"/>
+    <addaction name="actionRefresh"/>
+    <addaction name="actionRebuildDatabase"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Reports</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionDaily_Report"/>
+    <addaction name="actionMonthly_Report"/>
+    <addaction name="actionYearly_Report"/>
+    <addaction name="actionExport_to_Excell"/>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="actionTheme"/>
+    <addaction name="actionReset_settings"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+    <addaction name="actionDocumentation"/>
+    <addaction name="actionCheck_for_Updates"/>
+    <addaction name="actionAbout_PTA"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuReports"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBarMain">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenFolder"/>
+   <addaction name="actionAnalyze"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionOpenExcel"/>
+   <addaction name="actionPreferences"/>
+  </widget>
+  <action name="actionOpenFolder">
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </action>
+  <action name="actionOpenDatabase">
+   <property name="text">
+    <string>Open Database</string>
+   </property>
+  </action>
+  <action name="actionOpenExcel">
+   <property name="text">
+    <string>Open Excel</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAnalyze">
+   <property name="text">
+    <string>Analyze</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="text">
+    <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionCleareQueue">
+   <property name="text">
+    <string>Cleare Queue</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
+  <action name="actionRebuildDatabase">
+   <property name="text">
+    <string>Rebuild Database</string>
+   </property>
+  </action>
+  <action name="actionDaily_Report">
+   <property name="text">
+    <string>Daily Report</string>
+   </property>
+  </action>
+  <action name="actionMonthly_Report">
+   <property name="text">
+    <string>Monthly Report</string>
+   </property>
+  </action>
+  <action name="actionYearly_Report">
+   <property name="text">
+    <string>Yearly Report</string>
+   </property>
+  </action>
+  <action name="actionExport_to_Excell">
+   <property name="text">
+    <string>Excell</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionTheme">
+   <property name="text">
+    <string>Theme</string>
+   </property>
+  </action>
+  <action name="actionReset_settings">
+   <property name="text">
+    <string>Reset settings</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates">
+   <property name="text">
+    <string>Check for Updates</string>
+   </property>
+  </action>
+  <action name="actionAbout_PTA">
+   <property name="text">
+    <string>About PTA</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

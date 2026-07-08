@@ -1,6 +1,8 @@
-from PySide6.QtWidgets import QFileDialog
-from PySide6.QtUiTools import QUiLoader
+from pathlib import Path
+
 from PySide6.QtCore import QFile
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QFileDialog, QTreeWidgetItem
 
 
 class MainWindow:
@@ -18,6 +20,37 @@ class MainWindow:
 
         self.window.btnBrowseFolder.clicked.connect(self.browse_folder)
 
+    def load_video_list(self, folder):
+
+        self.window.treeVideos.clear()
+
+        video_extensions = {
+            ".mp4",
+            ".avi",
+            ".mov",
+            ".mkv"
+        }
+
+        folder = Path(folder)
+
+        files = sorted(folder.iterdir())
+
+        for file in files:
+
+            if not file.is_file():
+                continue
+
+            if file.suffix.lower() not in video_extensions:
+                continue
+
+            item = QTreeWidgetItem()
+
+            item.setText(0, file.name)
+            item.setText(1, "Waiting")
+            item.setText(2, "-")
+
+            self.window.treeVideos.addTopLevelItem(item)
+
     def browse_folder(self):
 
         folder = QFileDialog.getExistingDirectory(
@@ -26,7 +59,10 @@ class MainWindow:
         )
 
         if folder:
+
             self.window.txtVideoFolder.setText(folder)
+
+            self.load_video_list(folder)
 
     def show(self):
         self.window.show()
