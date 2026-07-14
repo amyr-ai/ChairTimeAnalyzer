@@ -1,6 +1,7 @@
-from services.excel_service import ExcelService
-
 from pathlib import Path
+
+from services.excel_service import ExcelService
+from services.statistics_service import StatisticsService
 
 
 class AnalyzerService:
@@ -9,6 +10,7 @@ class AnalyzerService:
 
         self.video_service = video_service
         self.excel_service = ExcelService()
+        self.statistics = StatisticsService()
 
     def analyze_video(
 
@@ -38,13 +40,13 @@ class AnalyzerService:
 
             return
 
+        self.statistics.reset()
 
         info = self.video_service.get_video_info(
 
             capture
 
         )
-
 
         if log_callback:
 
@@ -98,12 +100,11 @@ class AnalyzerService:
 
             )
 
-
         self.video_service.read_all_frames(
 
             capture,
 
-            frame_callback=frame_callback,
+            frame_callback=self.process_frame,
 
             progress_callback=progress_callback,
 
@@ -123,11 +124,19 @@ class AnalyzerService:
 
             duration=info["duration"],
 
-            sitting_time=0,
+            sitting_time=self.statistics.sitting_frames / info["fps"],
 
-            standing_time=0,
+            standing_time=self.statistics.standing_frames / info["fps"],
 
-            away_time=0,
+            away_time=self.statistics.away_frames / info["fps"],
+
+            chair_frames=self.statistics.chair_frames,
+
+            person_frames=self.statistics.person_frames,
+
+            empty_frames=self.statistics.empty_frames,
+
+            confidence=self.statistics.average_confidence(),
 
             processed_date=""
 
@@ -142,3 +151,19 @@ class AnalyzerService:
                 "Finished."
 
             )
+
+    def process_frame(self, frame):
+
+        self.statistics.add_frame(
+
+            person=True,
+
+            chair=True,
+
+            sitting=True,
+
+            standing=False,
+
+            confidence=1.0
+
+        )
