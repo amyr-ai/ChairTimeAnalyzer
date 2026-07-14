@@ -6,3 +6,12 @@ class VideoService:
         ok,frame=cap.read()
         cap.release()
         return ok,frame
+
+def open_video(self, file_path):
+
+    capture = cv2.VideoCapture(str(file_path))
+
+    if not capture.isOpened():
+        return None
+
+    return capture
