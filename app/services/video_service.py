@@ -98,3 +98,46 @@ class VideoService:
         capture.release()
 
         return info
+    def draw_person_boxes(self, frame, persons):
+
+        output = frame.copy()
+
+        for person in persons:
+
+            x1, y1, x2, y2 = person["bbox"]
+
+            confidence = person["confidence"]
+
+            cv2.rectangle(
+
+                output,
+
+                (x1, y1),
+
+                (x2, y2),
+
+                (0, 255, 0),
+
+                2,
+
+            )
+
+            cv2.putText(
+
+                output,
+
+                f"Person {confidence:.2f}",
+
+                (x1, max(25, y1 - 10)),
+
+                cv2.FONT_HERSHEY_SIMPLEX,
+
+                0.6,
+
+                (0, 255, 0),
+
+                2,
+
+            )
+
+        return output

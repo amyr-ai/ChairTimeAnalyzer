@@ -6,10 +6,22 @@ from services.statistics_service import StatisticsService
 
 class AnalyzerService:
 
-    def __init__(self, video_service):
+    def __init__(
+
+        self,
+
+        video_service,
+
+        yolo_service,
+
+    ):
 
         self.video_service = video_service
+
+        self.yolo_service = yolo_service
+
         self.excel_service = ExcelService()
+
         self.statistics = StatisticsService()
 
     def analyze_video(
@@ -154,16 +166,32 @@ class AnalyzerService:
 
     def process_frame(self, frame):
 
+        persons = self.yolo_service.detect_persons(frame)
+
+        person_detected = len(persons) > 0
+
+        confidence = 0.0
+
+        if person_detected:
+
+            confidence = max(
+
+                person["confidence"]
+
+                for person in persons
+
+            )
+
         self.statistics.add_frame(
 
-            person=True,
+            person=person_detected,
 
-            chair=True,
+            chair=False,
 
-            sitting=True,
+            sitting=person_detected,
 
             standing=False,
 
-            confidence=1.0
+            confidence=confidence,
 
-        )
+    )

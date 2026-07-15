@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (
 
 from services.video_service import VideoService
 from services.analyzer_service import AnalyzerService
-
+from services.yolo_service import YOLOService
 
 class MainWindow:
 
@@ -40,10 +40,16 @@ class MainWindow:
 
         self.video_service = VideoService()
 
-        self.analyzer_service = AnalyzerService(
-            self.video_service
-        )
+        self.yolo_service = YOLOService()
 
+        self.analyzer_service = AnalyzerService(
+
+             self.video_service,
+
+             self.yolo_service,
+
+        )
+        
         self.current_folder = None
 
         self.video_queue = []
@@ -139,6 +145,21 @@ class MainWindow:
             )
 
             return
+        persons = self.yolo_service.detect_persons(frame)
+        self.add_log(
+            f"Persons detected : {len(persons)}"
+        )
+        frame = self.video_service.draw_person_boxes(
+
+            frame,
+
+            persons
+
+        )
+
+        self.add_log(
+            f"Persons detected : {len(persons)}"
+        )
 
         frame = cv2.cvtColor(
             frame,
