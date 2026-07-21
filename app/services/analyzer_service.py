@@ -6,192 +6,87 @@ from services.statistics_service import StatisticsService
 
 class AnalyzerService:
 
-    def __init__(
-
-        self,
-
-        video_service,
-
-        yolo_service,
-
-    ):
+    def __init__(self, video_service, yolo_service):
 
         self.video_service = video_service
-
         self.yolo_service = yolo_service
-
         self.excel_service = ExcelService()
-
         self.statistics = StatisticsService()
 
     def analyze_video(
-
         self,
-
         file_path,
-
         progress_callback=None,
-
         log_callback=None,
-
         frame_callback=None,
-
     ):
 
         capture = self.video_service.open_video(file_path)
 
         if capture is None:
-
             if log_callback:
-
-                log_callback(
-
-                    f"Cannot open : {file_path}"
-
-                )
-
+                log_callback(f"Cannot open : {file_path}")
             return
 
         self.statistics.reset()
 
-        info = self.video_service.get_video_info(
+        info = self.video_service.get_video_info(capture)
 
-            capture
+        fps = info["fps"]
+        frame_count = info["frame_count"]
+        duration = info["duration"]
 
-        )
+        current_frame = 0
+        last_sitting = False
+        chair_initialized = False
 
-        if log_callback:
+        while True:
 
-            log_callback("")
+            ok, frame = capture.read()
 
-            log_callback(
+            if not ok:
+                break
 
-                "================================"
+            if not chair_initialized:
 
+                self.yolo_service.detect_green_chair_once(frame)
+                chair_initialized = True
+
+            if current_frame % self.yolo_service.SKIP_FRAMES == 0:
+
+                persons = self.yolo_service.detect_persons(frame)
+
+                last_sitting = self.yolo_service.is_sitting(
+                    persons
+                )
+
+            self.statistics.update(
+                frame_number=current_frame,
+                sitting=last_sitting,
             )
 
-            log_callback(
+            if frame_callback:
+                frame_callback(frame)
 
-                f"Video : {Path(file_path).name}"
+            if progress_callback:
+                percent = int(current_frame * 100 / frame_count)
+                progress_callback(percent)
 
-            )
+            current_frame += 1
 
-            log_callback(
-
-                f"Resolution : "
-
-                f"{info['width']} x {info['height']}"
-
-            )
-
-            log_callback(
-
-                f"FPS : {info['fps']:.2f}"
-
-            )
-
-            log_callback(
-
-                f"Frames : "
-
-                f"{info['frame_count']}"
-
-            )
-
-            log_callback(
-
-                f"Duration : "
-
-                f"{info['duration']:.1f} sec"
-
-            )
-
-            log_callback(
-
-                "Reading frames..."
-
-            )
-
-        self.video_service.read_all_frames(
-
-            capture,
-
-            frame_callback=self.process_frame,
-
-            progress_callback=progress_callback,
-
-        )
+        self.statistics.finish(current_frame - 1)
 
         self.excel_service.add_video(
-
             file_name=Path(file_path).name,
-
-            width=info["width"],
-
-            height=info["height"],
-
-            fps=info["fps"],
-
-            frame_count=info["frame_count"],
-
-            duration=info["duration"],
-
-            sitting_time=self.statistics.sitting_frames / info["fps"],
-
-            standing_time=self.statistics.standing_frames / info["fps"],
-
-            away_time=self.statistics.away_frames / info["fps"],
-
-            chair_frames=self.statistics.chair_frames,
-
-            person_frames=self.statistics.person_frames,
-
-            empty_frames=self.statistics.empty_frames,
-
-            confidence=self.statistics.average_confidence(),
-
-            processed_date=""
-
+            duration=duration,
+            fps=fps,
+            frame_count=frame_count,
+            sessions=self.statistics.get_sessions(),
         )
 
         self.excel_service.save()
 
+        capture.release()
+
         if log_callback:
-
-            log_callback(
-
-                "Finished."
-
-            )
-
-    def process_frame(self, frame):
-
-        persons = self.yolo_service.detect_persons(frame)
-
-        person_detected = len(persons) > 0
-
-        confidence = 0.0
-
-        if person_detected:
-
-            confidence = max(
-
-                person["confidence"]
-
-                for person in persons
-
-            )
-
-        self.statistics.add_frame(
-
-            person=person_detected,
-
-            chair=False,
-
-            sitting=person_detected,
-
-            standing=False,
-
-            confidence=confidence,
-
-    )
+            log_callback("Finished.")

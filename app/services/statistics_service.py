@@ -6,69 +6,86 @@ class StatisticsService:
 
     def reset(self):
 
-        self.total_frames = 0
+        self.sessions = []
 
-        self.person_frames = 0
+        self.is_sitting = False
 
-        self.chair_frames = 0
+        self.start_frame = None
 
-        self.empty_frames = 0
+        self.end_frame = None
 
-        self.sitting_frames = 0
-
-        self.standing_frames = 0
-
-        self.away_frames = 0
-
-        self.total_confidence = 0
-
-        self.confidence_count = 0
-
-    def add_frame(
+    def update(
 
         self,
 
-        person=False,
+        frame_number,
 
-        chair=False,
-
-        sitting=False,
-
-        standing=False,
-
-        confidence=0
+        sitting,
 
     ):
 
-        self.total_frames += 1
+        # شروع یک Session
 
-        if person:
-            self.person_frames += 1
+        if sitting and not self.is_sitting:
 
-        if chair:
-            self.chair_frames += 1
+            self.is_sitting = True
 
-        if not person:
-            self.empty_frames += 1
+            self.start_frame = frame_number
 
-        if sitting:
-            self.sitting_frames += 1
+            return
 
-        if standing:
-            self.standing_frames += 1
+        # پایان Session
 
-        if not sitting and not standing:
-            self.away_frames += 1
+        if (not sitting) and self.is_sitting:
 
-        if confidence > 0:
+            self.is_sitting = False
 
-            self.total_confidence += confidence
+            self.end_frame = frame_number - 1
 
-            self.confidence_count += 1
+            self.sessions.append(
 
-    def average_confidence(self):
+                {
 
-        if self.confidence_count == 0:
-            return 0
+                    "start_frame": self.start_frame,
 
-        return self.total_confidence / self.confidence_count
+                    "end_frame": self.end_frame,
+
+                }
+
+            )
+
+            self.start_frame = None
+
+            self.end_frame = None
+
+    def finish(
+
+        self,
+
+        last_frame,
+
+    ):
+
+        if self.is_sitting:
+
+            self.sessions.append(
+
+                {
+
+                    "start_frame": self.start_frame,
+
+                    "end_frame": last_frame,
+
+                }
+
+            )
+
+            self.is_sitting = False
+
+    def get_sessions(
+
+        self,
+
+    ):
+
+        return self.sessions
